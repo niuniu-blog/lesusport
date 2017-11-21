@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+    <!--给应用起个名字-->
+    <dubbo:application name="lesusport-console"/>
+    <!--消费方注册-->
+    <dubbo:registry address="192.168.213.132:2181" protocol="zookeeper"/>
+    <!--配置调用的借口-->
+    <dubbo:reference interface="com.haichuang.lesusport.service.test.TestService" id="testService"/>
+    <dubbo:reference interface="com.haichuang.lesusport.service.brand.BrandService" id="brandService"/>
+    <dubbo:reference interface="com.haichuang.lesusport.service.upload.UploadService" id="uploadService"/>
+    <dubbo:reference interface="com.haichuang.lesusport.service.product.ProductService" id="productService"/>
+    <dubbo:reference interface="com.haichuang.lesusport.service.color.ColorService" id="colorService"/>
+    <dubbo:reference interface="com.haichuang.lesusport.service.sku.SkuService" id="skuService"/>
+    <dubbo:reference interface="com.haichuang.lesusport.service.PositionService" id="positionService"/>
+    <dubbo:reference interface="com.haichuang.lesusport.service.AdService" id="adService"/>
+    <!--设置全局超时时间-->
+    <dubbo:consumer timeout="600000" check="false"/>
+</beans>

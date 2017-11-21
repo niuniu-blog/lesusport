@@ -1,0 +1,26 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!--配置组件扫描-->
+    <context:component-scan base-package="com.haichuang.lesusport.controller,com.haichuang.lesusport.exception"/>
+    <!--配置springmvc注解开发-->
+    <mvc:annotation-driven conversion-service="formattingConversionService"/>
+    <!--配置视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/WEB-INF/console/"
+          p:suffix=".jsp"/>
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+    <!--配置静态资源放行-->
+    <mvc:default-servlet-handler/>
+    <!--配置格式转换-->
+    <bean id="formattingConversionService"
+          class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <list>
+                <bean class="com.haichuang.lesusport.common.conveter.CustomerConveter"/>
+            </list>
+        </property>
+    </bean>
+</beans>

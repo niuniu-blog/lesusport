@@ -1,0 +1,42 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <context:component-scan base-package="com.haichuang.lesusport.service"/>
+    <!--配置文件扫描-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!--配置德鲁伊数据源-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" p:driverClassName="${jdbc.driverClassName}"
+          p:url="${jdbc.url}" p:username="${jdbc.username}" p:password="${jdbc.password}"/>
+    <!--配置sqlsession工厂-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" p:dataSource-ref="dataSource"
+          p:configLocation="classpath:SqlMapConfig.xml"/>
+    <!--配置mapper代理工厂-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:basePackage="com.haichuang.lesusport.dao"/>
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+          p:dataSource-ref="dataSource"/>
+    <!--配置注解式事务-->
+    <tx:annotation-driven/>
+    <!--配置jedis-->
+    <bean id="jedis" class="redis.clients.jedis.Jedis">
+        <constructor-arg value="192.168.200.128" type="java.lang.String" index="0"/>
+        <constructor-arg value="6379" index="1"/>
+    </bean>
+    <!--配置solrJ-->
+    <bean id="solrServer" class="org.apache.solr.client.solrj.impl.HttpSolrServer">
+        <constructor-arg value="http://solr.lesusport.com/solr"/>
+    </bean>
+    <!--配置mq-->
+    <!--    <amq:connectionFactory brokerURL="tcp://192.168.200.128:61616" userName="admin" password="admin"
+                               id="connectionFacotry"/>-->
+    <bean class="org.apache.activemq.ActiveMQConnectionFactory" p:userName="admin" p:password="admin"
+          p:brokerURL="tcp://192.168.200.128:61616" id="connectionFactory"/>
+    <bean id="poolConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+          p:connectionFactory-ref="connectionFactory"/>
+    <bean class="org.springframework.jms.connection.SingleConnectionFactory"
+          p:targetConnectionFactory-ref="poolConnectionFactory" id="delegatingConnectionFactory"/>
+    <bean class="org.springframework.jms.core.JmsTemplate" p:connectionFactory-ref="delegatingConnectionFactory"
+          id="jmsTemplate" p:defaultDestinationName="productId" p:pubSubDomain="true"/>
+</beans>

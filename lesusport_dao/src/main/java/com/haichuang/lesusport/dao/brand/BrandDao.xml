@@ -1,0 +1,92 @@
+<?xml version= "1.0" encoding ="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.haichuang.lesusport.dao.brand.BrandDao">
+    <sql id="choose">
+        <where>
+            <if test="name!=null and name!=''">
+                name LIKE "%"#{name}"%"
+            </if>
+            <if test="isDisplay!=null">
+                and is_display = #{isDisplay}
+            </if>
+        </where>
+    </sql>
+    <insert id="saveBrand" useGeneratedKeys="true" keyProperty="id">
+
+        INSERT INTO bbs_brand (name, description, img_url, sort, is_display)
+        VALUES (
+        #{name},
+        #{description},
+        #{imgUrl},
+        #{sort},
+        #{isDisplay})
+    </insert>
+    <update id="updateBrandById">
+        UPDATE bbs_brand
+        <set>
+            <if test="name !=null ">
+                name = #{name},
+            </if>
+            <if test="imgUrl !=null ">
+                img_url = #{imgUrl},
+            </if>
+            <if test="sort !=null ">
+                sort = #{sort},
+            </if>
+            <if test="isDisplay !=null ">
+                is_display = #{isDisplay},
+            </if>
+            <if test="description !=null ">
+                description = #{description},
+            </if>
+        </set>
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+        </where>
+    </update>
+    <delete id="removeBrands">
+        DELETE FROM bbs_brand
+        WHERE
+        <foreach collection="array" item="id" open="id in (" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="removeBrand">
+        DELETE FROM bbs_brand WHERE id = #{id}
+    </delete>
+    <resultMap id="brand" type="Brand">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="img_url" property="imgUrl"/>
+        <result column="is_display" property="isDisplay"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+    <select id="pageQuery" resultMap="brand">
+        SELECT id,name,description,img_url,is_display,sort
+        FROM bbs_brand
+        <include refid="choose"/>
+        limit #{startIndex},#{pageSize}
+    </select>
+    <select id="countPage" resultType="java.lang.Integer">
+        SELECT count(id)
+        FROM bbs_brand
+        <include refid="choose"/>
+    </select>
+    <select id="getBrandById" resultMap="brand">
+        SELECT * FROM bbs_brand WHERE id = #{id}
+    </select>
+    <select id="listBrands" resultMap="brand">
+        SELECT id,name,description,img_url,is_display,sort FROM bbs_brand
+    </select>
+    <resultMap id="idAndName" type="Brand">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+    </resultMap>
+    <select id="listIdAndNameFromBrandAndIsDisplayIsTrue" resultMap="idAndName">
+        SELECT id,name FROM bbs_brand WHERE is_display = 1
+    </select>
+</mapper>
